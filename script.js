@@ -46,17 +46,19 @@ function submitGuess() {
         console.log(sEnteredWord);
         console.log(sEnteredWord.join(''));
         sGuess = sEnteredWord.join('');
-        
-            fetch("https://api.dictionaryapi.dev/api/v2/entries/en/${sGuess}")
-                .then(res => {
-                    if (!res.ok) throw new Error("Word not found");
+        fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + sGuess)
+            .then(res => {
+                if (!res.ok) {
+                    // throw new Error("Word not found");
+                    // alert("Word doesn't exist")
                     return res.json();
-                })
-                .then(data => console.log("Word exists:", data))
-                .catch(() => console.log("Word does not exist"));
-            if (sEnteredWord.join('') === sHiddenWord) {
-                alert('You win');
-            }
+                }
+            })
+            .then(data => console.log("Word exists:"))
+            .catch((e) => console.log("Word does not exist", e));
+        if (sEnteredWord.join('') === sHiddenWord) {
+            alert('You win');
+        }
         else {
             if (iTryCount == iMaxTrys) {
                 alert('you failed the word was : ' + sHiddenWord)
@@ -66,6 +68,13 @@ function submitGuess() {
                     }
 
                 }
+            } else {
+                arCorrectIdx = sEnteredWord
+                    .map((value, index) => value == sHiddenWord[index] ? index : -1
+                    )
+                    .filter(index => index != -1).push(index)
+                console.log("correct positions :" + arCorrectIdx);
+
             }
             iTryCount++;
             iCurrentCol = 0;
@@ -81,6 +90,31 @@ function currentIndex() {
 }
 
 $('body').keydown(fillTheBox);
+$('#debug').change(function (e) {
+    // e.preventDefault();
+    console.log(e.target.checked);
+    if (e.target.checked) {
+        $('.debug').toggleClass('visually-hidden');
+        debug_start()
+    }
+    else {
+        $('.debug').toggleClass('visually-hidden');
 
+    }
+
+
+});
+
+function debug_start() {
+
+    for (let j = 0; j <= iMaxCols; j++) {
+        $('.row_0' + ' .col_' + (j + 1)).html(sHiddenWord[j])
+        console.log('.row_0' + ' .col_' + (j + 1));
+
+    }
+
+
+
+}
 
 
