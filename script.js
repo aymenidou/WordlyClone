@@ -10,7 +10,7 @@ function fillTheBox(data) {
     // console.log('key press [' + data.key + ']');
     let key = data.key.toUpperCase()
     if (/^[A-Z]$/.test(key)) {
-        console.log(key);
+        // console.log(key);
         updateCell(key);
     } else if (key === "BACKSPACE") {
         deleteLetter();
@@ -46,18 +46,21 @@ function submitGuess() {
         console.log(sEnteredWord);
         console.log(sEnteredWord.join(''));
         sGuess = sEnteredWord.join('');
-        fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + sGuess)
-            .then(res => {
-                if (!res.ok) {
-                    // throw new Error("Word not found");
-                    // alert("Word doesn't exist")
-                    return res.json();
-                }
-            })
-            .then(data => console.log("Word exists:"))
-            .catch((e) => console.log("Word does not exist", e));
+        // fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + sGuess)
+        //     .then(res => {
+        //         if (!res.ok) {
+        //             // throw new Error("Word not found");
+        //             // alert("Word doesn't exist")
+        //             return res.json();
+        //         }
+        //     })
+        //     .then(data => console.log("Word exists:"))
+        //     .catch((e) => console.log("Word does not exist", e));
         if (sEnteredWord.join('') === sHiddenWord) {
-            alert('You win');
+            for (let i = 1; i <= iMaxCols; i++) {
+                $('.row_' + iTryCount + ' .col_' + i).addClass('green');
+            }
+            // alert('You win');
         }
         else {
             if (iTryCount == iMaxTrys) {
@@ -69,11 +72,39 @@ function submitGuess() {
 
                 }
             } else {
-                arCorrectIdx = sEnteredWord
+                sEnteredWord
                     .map((value, index) => value == sHiddenWord[index] ? index : -1
                     )
-                    .filter(index => index != -1).push(index)
-                console.log("correct positions :" + arCorrectIdx);
+                    .filter(index => index != -1)
+                    .map((value, index) => {
+                        $('.row_' + iTryCount + ' .col_' + (value + 1)).addClass('green');
+                        console.log('correct letter ' + value);
+                        sEnteredWord[value] = ''
+                    })
+                    console.log('sEnteredWord',sEnteredWord);
+                    
+                sEnteredWord.findIndex((value, index) => {
+                    iIdxMissplaced =sHiddenWord.split('').findIndex((val,index)=>val === value);
+                    console.log();
+                    
+                    $('.row_' + iTryCount + ' .col_' + (iIdxMissplaced )).addClass('yellow');
+                    console.log('val', value, 'index', index);
+                    sEnteredWord[value] = ''
+                })
+                // .map((value, index) => value == sHiddenWord[index] ? index : -1
+                // )
+                // .filter(index => index != -1)
+                // .map((value, index) => {
+                //     $('.row_' + iTryCount + ' .col_' + (value + 1)).addClass('yellow');
+                //     console.log('correct letter ' + value);
+                //     sEnteredWord[value] = ''
+                // })
+
+                console.log("sEnteredWord :", sEnteredWord);
+                // arCorrectIdx.map((value, index) => {
+                //     $('.row_' + iTryCount + ' .col_' + (value + 1)).addClass('green');
+                //     console.log('correct letter ' + value);
+                // })
 
             }
             iTryCount++;
